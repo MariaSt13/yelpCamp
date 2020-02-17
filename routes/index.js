@@ -10,7 +10,7 @@ router.get("/", (req, res) => {
 
 // Show signUp
 router.get("/signup", (req, res) => {
-	res.render("signup");
+	res.render("signup", {active: "signup"});
 });
 
 // Create user
@@ -31,7 +31,7 @@ router.post("/signup", (req, res) => {
 
 // Show login
 router.get("/login", (req, res) => {
-	res.render("login");
+	res.render("login", {active:"login"});
 });
 
 // Log in user

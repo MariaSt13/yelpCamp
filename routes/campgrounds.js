@@ -8,7 +8,7 @@ router.get("/", (req, res) => {
 	Campground.find({}, (err, campgrounds) => {
 		if (!err) {
 			req.session.returnTo = req.originalUrl;
-			res.render("campgrounds/index", { campgrounds: campgrounds });
+			res.render("campgrounds/index", { campgrounds: campgrounds , active:"campgrounds"});
 		} else {
 			console.log(err);
 			req.flash("error", "Oops, Something went wrong");
