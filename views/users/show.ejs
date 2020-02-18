@@ -1,0 +1,15 @@
+<% include ../partials/header %>
+
+<h1><%= user.username%></h1>
+<h3><%=user.firstname + " " + user.lastname%></h3>
+
+<div class="panel panel-default" id="usersCampgroudList">
+    <div class="panel-heading"><%=user.username%>'s campgrounds:</div>
+    <ul class="list-group">
+        <% campgrounds.forEach(campground => { %>
+            <li class="list-group-item"><a href="/campgrounds/<%=campground.id%>"><%=campground.name%></a></li>
+        <% }); %>
+    </ul>
+</div>
+
+<% include ../partials/footer %>

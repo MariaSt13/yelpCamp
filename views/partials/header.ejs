@@ -27,7 +27,7 @@
 							<li <%if(typeof active !== 'undefined' && active=="login"){%>class="active"<%}%>><a href="/login">Login</a></li>
 							<li <%if(typeof active !== 'undefined' && active=="signup"){%>class="active"<%}%>><a href="/signup">Sign Up</a></li>
 						<% } else { %>
-							<li><a>Hi, <%=currentUser.username%></a></li>
+							<li><a href="/users/<%=currentUser.id%>">Hi, <%=currentUser.username%></a></li>
 							<li><a href="/logout">Logout</a></li>
 						<% } %>
 					</ul>

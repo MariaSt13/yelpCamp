@@ -1,7 +1,8 @@
 const	express = require('express'),
 		passport = require('passport'),
 		router = express.Router(),
-		User = require("../models/user");
+		User = require("../models/user"),
+		Campground = require("../models/campground");
 
 // Index route
 router.get("/", (req, res) => {
@@ -15,7 +16,12 @@ router.get("/signup", (req, res) => {
 
 // Create user
 router.post("/signup", (req, res) => {
-	const newUser = new User({ username: req.body.username });
+	const newUser = new User({
+		 username: req.body.username,
+		 email: req.body.email,
+		 firstname: req.body.firstname,
+		 lastname: req.body.lastname
+		 });
 	User.register(newUser, req.body.password, (err, user) => {
 		if (!err) {
 			passport.authenticate("local")(req, res, () => {
@@ -54,4 +60,17 @@ router.get("/logout", (req, res) => {
 	res.redirect("/campgrounds");
 });
 
+// User page route
+router.get("/users/:id", (req,res)=> {
+	User.findById(req.params.id, async (err, user)=> {
+		if(!err) {
+			let campgrounds = await Campground.find().where('author.id').equals(user.id);
+			res.render("users/show", {user: user, campgrounds:campgrounds})
+		} else {
+			console.log(err);
+			req.flash("error", "Oops, Something went wrong.");
+			res.redirect("/campgrounds");
+		}
+	})
+})
 module.exports = router;

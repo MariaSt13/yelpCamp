@@ -5,3 +5,7 @@
 .delete-form {
 	display: inline;
 }
+
+#usersCampgroudList {
+	margin-top: 30px;
+}
