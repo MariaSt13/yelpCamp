@@ -14,7 +14,7 @@ const	express = require('express'),
 		commentsRoutes = require('./routes/comments'),
 		campgroundsRoutes = require('./routes/campgrounds');
 
-mongoose.connect(process.env.DATABASEURL, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false });
+mongoose.connect(process.env.DATABASEURL, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false,  useCreateIndex: true });
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");

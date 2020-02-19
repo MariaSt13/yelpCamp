@@ -1,9 +1,59 @@
-.thumbnail img{
+form {
+	padding-bottom: 1em;
+}
+
+.thumbnail img {
 	width: 100%
+}
+
+.caption h4 {
+	padding-bottom: 2em;
 }
 
 .delete-form {
 	display: inline;
+}
+
+.comment {
+	padding-bottom: 1em;
+}
+
+.row.equal-cols {
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-flex-wrap: wrap;
+	-ms-flex-wrap: wrap;
+	flex-wrap: wrap;
+}
+
+.row.equal-cols:before, .row.equal-cols:after {
+	display: block;
+}
+
+.row.equal-cols>[class*='col-'] {
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-flex-direction: column;
+	-ms-flex-direction: column;
+	flex-direction: column;
+}
+
+.row.equal-cols>[class*='col-']>* {
+	-webkit-flex: 1 1 auto;
+	-ms-flex: 1 1 auto;
+	flex: 1 1 auto;
+}
+
+.thumbnail {
+	position: relative;
+}
+
+.row-bottom {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
 }
 
 #usersCampgroudList {
