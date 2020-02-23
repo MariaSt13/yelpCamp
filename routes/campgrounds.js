@@ -42,8 +42,8 @@ router.get("/new", middleware.isLoggedIn, (req, res) => {
 });
 
 // Show route
-router.get("/:id", (req, res) => {
-	Campground.findById(req.params.id).populate("comments").exec((err, foundCampground) => {
+router.get("/:slug", (req, res) => {
+	Campground.findOne({slug: req.params.slug}).populate("comments").exec((err, foundCampground) => {
 		if (!err && foundCampground) {
 			req.session.returnTo = req.originalUrl;
 			res.render("campgrounds/show", { campground: foundCampground })
@@ -56,8 +56,8 @@ router.get("/:id", (req, res) => {
 });
 
 // Edit route
-router.get("/:id/edit", middleware.isLoggedIn, middleware.isCampgroundOwner, (req, res) => {
-	Campground.findById(req.params.id, (err, campground) => {
+router.get("/:slug/edit", middleware.isLoggedIn, middleware.isCampgroundOwner, (req, res) => {
+	Campground.findOne({slug: req.params.slug}, (err, campground) => {
 		if (!err && campground) {
 			res.render("campgrounds/edit", { campground: campground });
 		} else {
@@ -69,11 +69,23 @@ router.get("/:id/edit", middleware.isLoggedIn, middleware.isCampgroundOwner, (re
 });
 
 // Update route
-router.put("/:id", middleware.isLoggedIn, middleware.isCampgroundOwner, (req, res) => {
-	Campground.findByIdAndUpdate(req.params.id, req.body.campground, (err, campground) => {
+router.put("/:slug", middleware.isLoggedIn, middleware.isCampgroundOwner, (req, res) => {
+	Campground.findOne({slug: req.params.slug}, (err, campground) => {
 		if (!err) {
-			req.flash("success", "Campground updated");
-			res.redirect("/campgrounds/" + req.params.id);
+			campground.name = req.body.campground.name;
+			campground.price  = req.body.campground.price;
+			campground.image = req.body.campground.image;
+			campground.description = req.body.campground.description;
+			campground.save(err => {
+				if(!err) {
+					req.flash("success", "Campground updated");
+					res.redirect("/campgrounds/" + campground.slug);	
+				} else {
+					console.log(err);
+					req.flash("error", "Oops, Something went wrong");
+					res.redirect("/campgrounds")
+				}
+			})
 		} else {
 			console.log(err);
 			req.flash("error", "Oops, Something went wrong");
@@ -83,8 +95,8 @@ router.put("/:id", middleware.isLoggedIn, middleware.isCampgroundOwner, (req, re
 });
 
 // Destroy route
-router.delete("/:id", middleware.isLoggedIn, middleware.isCampgroundOwner, (req, res) => {
-	Campground.findById(req.params.id, (err, campground) => {
+router.delete("/:slug", middleware.isLoggedIn, middleware.isCampgroundOwner, (req, res) => {
+	Campground.findOne({slug: req.params.slug}, (err, campground) => {
 		if (!err) {
 			campground.remove();
 			req.flash("success", "Campground deleted");

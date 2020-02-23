@@ -47,7 +47,7 @@ app.use((req, res, next) => {
 
 app.use(indexRoutes);
 app.use("/campgrounds", campgroundsRoutes);
-app.use("/campgrounds/:id/comments", commentsRoutes);
+app.use("/campgrounds/:slug/comments", commentsRoutes);
 
 var port = process.env.PORT ? process.env.PORT : 3000;
 app.listen(port, () => {

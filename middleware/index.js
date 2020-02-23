@@ -33,7 +33,7 @@ middlewares.isCommentOwner = (req, res, next) => {
 
 // Checks that the user owns the campground
 middlewares.isCampgroundOwner = (req, res, next) => {
-	Campground.findById(req.params.id, (err, campground) => {
+	Campground.findOne({slug: req.params.slug}, (err, campground) => {
 		if (!err && campground) {
 			if (campground.author.id.equals(req.user._id)) {
 				return next();

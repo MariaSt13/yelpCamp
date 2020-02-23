@@ -25,8 +25,8 @@
                 </p>
                 <!--Edit and delete buttons-->
                 <% if(currentUser && currentUser._id.equals(campground.author.id)) { %>
-                <a class="btn btn-warning" href="/campgrounds/<%=campground._id%>/edit">Edit</a>
-                <form class="delete-form" action="/campgrounds/<%=campground._id%>?_method=DELETE" method="POST">
+                <a class="btn btn-warning" href="/campgrounds/<%=campground.slug%>/edit">Edit</a>
+                <form class="delete-form" action="/campgrounds/<%=campground.slug%>?_method=DELETE" method="POST">
                     <button class="btn btn-danger">Delete</button>
                 </form>
                 <% } %>
@@ -36,7 +36,7 @@
         <div class="well">
             <!--Add Comment-->
             <div class="text-right">
-                <a class="btn btn-primary" href="/campgrounds/<%= campground._id %>/comments/new">Add New Comment</a>
+                <a class="btn btn-primary" href="/campgrounds/<%= campground.slug %>/comments/new">Add New Comment</a>
             </div>
             <hr>
             <!--Show Comments-->
@@ -51,9 +51,9 @@
                     <!--Edit and delete comment-->
                     <% if(currentUser && currentUser._id.equals(comment.author.id)) { %>
                     <a class="btn btn-xs btn-warning"
-                        href="/campgrounds/<%= campground._id %>/comments/<%=comment.id%>/edit">Edit</a>
+                        href="/campgrounds/<%= campground.slug %>/comments/<%=comment.id%>/edit">Edit</a>
                     <form class="delete-form"
-                        action="/campgrounds/<%=campground._id%>/comments/<%=comment._id%>?_method=DELETE"
+                        action="/campgrounds/<%=campground.slug%>/comments/<%=comment._id%>?_method=DELETE"
                         method="POST">
                         <button class="btn btn-xs btn-danger">Delete</button>
                     </form>
