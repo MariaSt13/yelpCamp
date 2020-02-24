@@ -9,6 +9,7 @@ const campgroundSchema = new mongoose.Schema({
 	},
 	price: Number,
 	image: String,
+	imageId: String,
 	description: String,
 	createdAt: {type:Date, default: Date.now},
 	slug: {
