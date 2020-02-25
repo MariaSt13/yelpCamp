@@ -7,7 +7,7 @@ form {
 }
 
 .caption h4 {
-	padding-bottom: 2em;
+	padding-bottom: 3.5em;
 }
 
 .delete-form {
@@ -18,6 +18,9 @@ form {
 	padding-bottom: 1em;
 }
 
+.likes {
+	padding-bottom: 1em;
+}
 .row.equal-cols {
 	display: -webkit-flex;
 	display: -ms-flexbox;

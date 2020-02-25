@@ -18,10 +18,36 @@
                 <!--Show price, name, description, author-->
                 <h4 class="pull-right"><strong>$<%=campground.price%>/night</strong></h4>
                 <h4><a><strong><%=campground.name%></strong></a></h4>
+                <!--Show Likes-->
+                <!--Number of likes, open modal with users that liked this campground-->
+                <div class="pull-right">
+                    <button type="button" class="btn btn-xs btn-primary" data-toggle="modal"
+                        data-target="#campgroundLikes">
+                        <span>Total likes: <i class="fas fa-thumbs-up"></i> <%= campground.likes.length %></span>
+                    </button>
+                </div>
+                <!--Like/Unlike button-->
+                <div>
+                    <form action="/campgrounds/<%= campground.slug %>/like" method="POST">
+                        <div class="btn-group">
+                            <!--Already liked this campground-->
+                            <% if (currentUser && campground.likes.some(like=>like.equals(currentUser._id))) { %>
+                            <button class="btn btn-sm btn-primary">
+                                <i class="fas fa-thumbs-up"></i> Liked (<%= campground.likes.length %>)
+                            </button>
+                            <!--Don't like the campground yet.-->
+                            <% } else { %>
+                            <button class="btn btn-sm btn-secondary">
+                                <i class="fas fa-thumbs-up"></i> Like (<%= campground.likes.length %>)
+                            </button>
+                            <% } %>
+                        </div>
+                    </form>
+                </div>
                 <p><%= campground.description %></p>
                 <p>
-                    <em>Submitted by: <a href="/users/<%=campground.author.id%>"><%=campground.author.username%></a>, 
-                    <%=moment(campground.createdAt).fromNow()%></em>
+                    <em>Submitted by: <a href="/users/<%=campground.author.id%>"><%=campground.author.username%></a>,
+                        <%=moment(campground.createdAt).fromNow()%></em>
                 </p>
                 <!--Edit and delete buttons-->
                 <% if(currentUser && currentUser._id.equals(campground.author.id)) { %>
@@ -40,7 +66,7 @@
             </div>
             <hr>
             <!--Show Comments-->
-            <% campground.comments.forEach(function(comment){ %>
+            <% campground.comments.forEach(comment => { %>
             <div class="row">
                 <div class="col-md-12 comment">
                     <strong><%= comment.author.username %></strong>
@@ -65,4 +91,42 @@
     </div>
 </div>
 
+<!-- Campground Likes Modal -->
+<div id="campgroundLikes" class="modal fade" role="dialog" aria-labelledby="modalLabel">
+    <div class="modal-dialog" role="document">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="modalLabel">Campground likes: <%= campground.likes.length %></h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Liked by:</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!--Show all the users that liked this campground.-->
+                        <% campground.likes.forEach(like => { %>
+                        <tr>
+                            <td><span class="badge"><i class="fas fa-user"></i></span> <a
+                                    href="/users/<%=like._id%>"><%= like.username %></a></td>
+                        </tr>
+                        <% }); %>
+                        <% if (campground.likes.length === 0) { %>
+                        <tr>
+                            <td><em>No likes yet.</em></td>
+                        </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <% include ../partials/footer %>

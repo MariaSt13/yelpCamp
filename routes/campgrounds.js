@@ -73,7 +73,7 @@ router.get("/new", middleware.isLoggedIn, (req, res) => {
 
 // Show route
 router.get("/:slug", (req, res) => {
-	Campground.findOne({ slug: req.params.slug }).populate("comments").exec((err, foundCampground) => {
+	Campground.findOne({ slug: req.params.slug }).populate("comments likes").exec((err, foundCampground) => {
 		if (!err && foundCampground) {
 			req.session.returnTo = req.originalUrl;
 			res.render("campgrounds/show", { campground: foundCampground })
@@ -141,4 +141,25 @@ router.delete("/:slug", middleware.isLoggedIn, middleware.isCampgroundOwner, asy
 	}
 });
 
+// Like route
+router.post("/:slug/like", middleware.isLoggedIn, async (req, res) => {
+	try {
+		const campground = await Campground.findOne({ slug: req.params.slug });
+		// check if the user already liked this campground.
+		const userLiked = campground.likes.some(like => like.equals(req.user._id));
+		if (userLiked) {
+			// unlike
+			campground.likes.pull(req.user._id)
+		} else {
+			// like
+			campground.likes.push(req.user._id)
+		}
+		await campground.save();
+		res.redirect("/campgrounds/" + campground.slug);
+	} catch (err) {
+		console.log(err);
+		req.flash("error", "Oops, Something went wrong");
+		res.redirect("/campgrounds");
+	}
+})
 module.exports = router;
