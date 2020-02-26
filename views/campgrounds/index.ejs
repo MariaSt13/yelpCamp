@@ -19,7 +19,8 @@
 				<h4 class="campgroundThumbnailName"><%= campground.name%></h4>
 				<div class="row row-bottom">
 					<div class="likes">
-						<span class="badge label-primary"><i class="fas fa-thumbs-up"></i> <%= campground.likes.length %></span>
+						<span class="badge label-primary"><i class="fas fa-thumbs-up"></i>
+							<%= campground.likes.length %></span>
 					</div>
 					<p>
 						<a href="campgrounds/<%=campground.slug%>" class="btn btn-primary">More Info</a>
@@ -30,5 +31,57 @@
 	</div>
 	<% }) %>
 </div>
+<!--Page navigation-->
+<nav aria-label="Page navigation">
+	<div class="row text-center">
+		<% if (numOfPages && numOfPages > 0) { %>
+		<ul class="pagination text-center">
+			<!--If on first page disable first and previous page buttons-->
+			<% if (currentPage == 1) { %>
+				<li class="disabled"><a>First</a></li>
+				<li class="disabled" aria-label="previous"><a>&laquo;</a></li>
+			<!--If not on first page add first and previous page buttons-->
+			<% } else { %>
+				<li><a href="/campgrounds">First</a></li>
+				<li><a href="/campgrounds?page=<%= Number(currentPage) - 1 %>" aria-label="previous">&laquo;</a></li>
+			<% } %>
 
+			<!--If the value of current page is less than 4, then pagination starts from 1-->
+			<!--otherwise, from current page - 3 -->
+			<% let start = (Number(currentPage) > 4 ? Number(currentPage) - 3 : 1) %>
+			<!--if the start of the pagination is not 1, add "..." to show that there are previous links-->
+			<% if (start !== 1) { %>
+				<li class="disabled"><a>...</a></li>
+			<% } %>
+			<!--If the value of current page is less than 4, then pagination ends at 5(or less if there are less campgrounds)-->
+			<!--otherwise, at current page + 1 -->
+			<% let last = (Number(currentPage) > 4 ? Number(currentPage) + 1 : 5) %>
+			<!--Show pagination links -->
+			<% for (let i = start; i <= last  && i <= numOfPages; i++) { %>
+				<!--show current page as active-->
+				<% if (i == currentPage) { %>
+					<li class="active"><a><%= i %></a></li>
+				<!--links to other pages-->
+				<% } else { %>
+					<li><a href="/campgrounds?page=<%= i %>"><%= i %></a></li>
+				<% } %>
+				<!--if the end of the pagination is not the last page, add "..." to show that there are more links-->
+				<% if (i == last && i < numOfPages) { %>
+					<li class="disabled"><a>...</a></li>
+				<% } %>
+			<% } %>
+
+			<!--If on last page disable last and next page buttons-->
+			<% if (currentPage == numOfPages) { %>
+				<li class="disabled" aria-label="next"><a>&raquo;</a></li>
+				<li class="disabled"><a>Last</a></li>
+			<!--If not on last page add last and next page buttons-->
+			<% } else { %>
+				<li><a href="/campgrounds?page=<%= Number(currentPage) + 1 %>" aria-label="next">&raquo;</a></li>
+				<li><a href="/campgrounds?page=<%= numOfPages %>">Last</a></li>
+			<% } %>
+		</ul>
+		<% } %>
+	</div>
+</nav>
 <%include ../partials/footer%>

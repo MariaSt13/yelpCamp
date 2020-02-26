@@ -5,6 +5,7 @@ const express = require('express'),
 	Campground = require("../models/campground"),
 	middleware = require('../middleware');
 
+// image upload config
 const storage = multer.diskStorage({
 	filename: (req, file, callback) => {
 		callback(null, Date.now() + file.originalname);
@@ -31,9 +32,19 @@ const upload = multer({ storage: storage, fileFilter: imageFilter });
 // Index route
 router.get("/", async (req, res) => {
 	try {
-		const campgrounds = await Campground.find({});
+		// for Pagination
+		const campsPerPage = 2;
+		var pageQuery = parseInt(req.query.page);
+		var pageNumber = pageQuery ? pageQuery : 1;
+		const campgrounds = await Campground.find({}).sort({createdAt: -1}).skip(campsPerPage * pageNumber - campsPerPage).limit(campsPerPage);
+		const numberOfCampgrounds = await Campground.countDocuments();
 		req.session.returnTo = req.originalUrl;
-		res.render("campgrounds/index", { campgrounds: campgrounds, active: "campgrounds" });
+		res.render("campgrounds/index", {
+			campgrounds: campgrounds,
+			active: "campgrounds",
+			currentPage: pageNumber,
+			numOfPages: Math.ceil(numberOfCampgrounds/campsPerPage)
+		});
 	} catch (err) {
 		console.log(err);
 		req.flash("error", "Oops, Something went wrong");
