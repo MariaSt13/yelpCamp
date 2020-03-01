@@ -2,7 +2,11 @@
 
 <h1><%= user.username%></h1>
 <h3><%=user.firstname + " " + user.lastname%></h3>
-
+<% if (currentUser && user.followers && user.followers.some(follwer=>follwer._id.equals(currentUser._id))) { %>
+    <a type="button" href="/users/<%=user._id%>/unfollow" class="btn btn-default">Unfollow</a>
+<% } else { %>
+    <a type="button" href="/users/<%=user._id%>/follow" class="btn btn-primary">Follow</a>
+<% } %>
 <div class="panel panel-default" id="usersCampgroudList">
     <div class="panel-heading"><%=user.username%>'s campgrounds:</div>
     <ul class="list-group">

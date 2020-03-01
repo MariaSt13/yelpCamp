@@ -46,7 +46,7 @@
                 </div>
                 <p><%= campground.description %></p>
                 <p>
-                    <em>Submitted by: <a href="/users/<%=campground.author.id%>"><%=campground.author.username%></a>,
+                    <em>Submitted by: <a href="/users/<%=campground.author._id%>"><%=campground.author.username%></a>,
                         <%=moment(campground.createdAt).fromNow()%></em>
                 </p>
                 <!--Edit and delete buttons-->

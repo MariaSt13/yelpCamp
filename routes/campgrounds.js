@@ -3,6 +3,8 @@ const express = require('express'),
 	multer = require('multer'),
 	cloudinary = require('cloudinary'),
 	Campground = require("../models/campground"),
+	User = require("../models/user"),
+	Notification = require("../models/notification"),
 	middleware = require('../middleware');
 
 // image upload config
@@ -33,17 +35,17 @@ const upload = multer({ storage: storage, fileFilter: imageFilter });
 router.get("/", async (req, res) => {
 	try {
 		// for Pagination
-		const campsPerPage = 2;
+		const campsPerPage = 8;
 		var pageQuery = parseInt(req.query.page);
 		var pageNumber = pageQuery ? pageQuery : 1;
-		const campgrounds = await Campground.find({}).sort({createdAt: -1}).skip(campsPerPage * pageNumber - campsPerPage).limit(campsPerPage);
+		const campgrounds = await Campground.find({}).sort({ createdAt: -1 }).skip(campsPerPage * pageNumber - campsPerPage).limit(campsPerPage);
 		const numberOfCampgrounds = await Campground.countDocuments();
 		req.session.returnTo = req.originalUrl;
 		res.render("campgrounds/index", {
 			campgrounds: campgrounds,
 			active: "campgrounds",
 			currentPage: pageNumber,
-			numOfPages: Math.ceil(numberOfCampgrounds/campsPerPage)
+			numOfPages: Math.ceil(numberOfCampgrounds / campsPerPage)
 		});
 	} catch (err) {
 		console.log(err);
@@ -63,11 +65,20 @@ router.post("/", middleware.isLoggedIn, upload.single('imageFile'), async (req, 
 		else {
 			req.body.campground.image = req.body.imageUrl;
 		}
-		req.body.campground.author = {
-			id: req.user._id,
-			username: req.user.username
-		};
-		await Campground.create(req.body.campground);
+		req.body.campground.author = req.user;
+		let newCampground = await Campground.create(req.body.campground);
+
+		let user = await User.findById(req.user._id).populate("followers").exec();
+		let newNotification = {
+			username: req.user.username,
+			campgroundSlug:	newCampground.slug,
+			text: " just created a new campground \"" + newCampground.name + "\""
+		}
+		let notification = await Notification.create(newNotification);
+		user.followers.forEach(follower=> {
+			follower.notifications.push(notification);
+			follower.save();
+		})
 		req.flash("success", "Campground created");
 		res.redirect("/campgrounds");
 	} catch (err) {
@@ -83,17 +94,22 @@ router.get("/new", middleware.isLoggedIn, (req, res) => {
 });
 
 // Show route
-router.get("/:slug", (req, res) => {
-	Campground.findOne({ slug: req.params.slug }).populate("comments likes").exec((err, foundCampground) => {
-		if (!err && foundCampground) {
+router.get("/:slug", async (req, res) => {
+	try {
+		let foundCampground = await Campground.findOne({ slug: req.params.slug }).populate([{ path: 'comments', populate: { path: 'author' } },
+		{ path: 'author' }, { path: 'likes' }]).exec();
+		if(foundCampground) {
 			req.session.returnTo = req.originalUrl;
 			res.render("campgrounds/show", { campground: foundCampground })
 		} else {
-			console.log(err);
 			req.flash("error", "Oops, Something went wrong");
-			res.redirect("back");
+			res.redirect("/campgrounds");
 		}
-	});
+	} catch (err) {
+		console.log(err);
+		req.flash("error", "Oops, Something went wrong");
+		res.redirect("back");
+	}
 });
 
 // Edit route
@@ -155,7 +171,7 @@ router.delete("/:slug", middleware.isLoggedIn, middleware.isCampgroundOwner, asy
 // Like route
 router.post("/:slug/like", middleware.isLoggedIn, async (req, res) => {
 	try {
-		const campground = await Campground.findOne({ slug: req.params.slug });
+		const campground = await Campground.findOne({ slug: req.params.slug }).populate("author").exec();
 		// check if the user already liked this campground.
 		const userLiked = campground.likes.some(like => like.equals(req.user._id));
 		if (userLiked) {
@@ -164,6 +180,14 @@ router.post("/:slug/like", middleware.isLoggedIn, async (req, res) => {
 		} else {
 			// like
 			campground.likes.push(req.user._id)
+			let newNotification = {
+				username: req.user.username,
+				campgroundSlug: req.params.slug,
+				text: " just liked your campground \"" + campground.name + "\""
+			}
+			let notification = await Notification.create(newNotification);
+			campground.author.notifications.push(notification);
+			await campground.author.save();
 		}
 		await campground.save();
 		res.redirect("/campgrounds/" + campground.slug);

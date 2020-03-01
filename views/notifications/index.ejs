@@ -1,0 +1,17 @@
+<%include ../partials/header%>
+<h1>Your Notifications</h1>
+<ul class="list-group">
+    <% allNotifications.forEach(notification => { %>
+    <li class="list-group-item">
+        <a href="/campgrounds/<%=notification.campgroundSlug%>"><%=notification.username +notification.text %></a>
+        <div class="pull-right">
+            <form class="delete-form" action="/notifications/<%=notification.id%>?_method=DELETE" method="POST">
+                <button class="btn btn-link delete-notification"><i class="fas fa-trash-alt"></i></button>
+            </form>
+        </div>
+    </li>
+    <% }); %>
+</ul>
+
+
+<%include ../partials/footer%>

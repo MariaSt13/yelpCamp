@@ -9,7 +9,15 @@ const userSchema = new mongoose.Schema({
 	lastname: String,
 	email: {type: String, unique:true},
 	resetPasswordToken: String,
-	resetPasswordExpires: Date
+	resetPasswordExpires: Date,
+	notifications: [{
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'Notification'
+	}],
+	followers: [{
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'User'
+	}]
 });
 
 userSchema.plugin(passportLocalMongoose);

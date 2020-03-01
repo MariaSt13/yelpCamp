@@ -2,6 +2,14 @@ form {
 	padding-bottom: 1em;
 }
 
+a {
+	color: inherit;
+}
+
+a:hover {
+	color: inherit;
+}
+
 .thumbnail img {
 	width: 100%
 }
@@ -12,6 +20,15 @@ form {
 
 .delete-form {
 	display: inline;
+}
+
+.delete-notification {
+	padding: inherit;
+	color: #d9534f;
+}
+.delete-notification:hover {
+	color:#AB3330;
+
 }
 
 .comment {

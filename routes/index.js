@@ -137,15 +137,20 @@ router.post("/forgot", (req, res, next) => {
 })
 
 // Show reset password route
-router.get("/reset/:token", (req, res) => {
-	User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, (err, user) => {
+router.get("/reset/:token", async (req, res) => {
+	try {
+		let user = await User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } });
 		if (!user) {
 			req.flash("error", "The password reset token is invalid or has expired. Please request a new one.")
 			return res.render('/forgot');
 		} else {
 			res.render('reset', { token: req.params.token });
 		}
-	})
+	} catch (err) {
+		console.log(err);
+		req.flash("error", "Oops, Something went wrong.");
+		res.redirect("/campgrounds");
+	}
 })
 
 // Reset password route
@@ -203,17 +208,4 @@ router.post("/reset/:token", (req, res) => {
 	})
 })
 
-// User page route
-router.get("/users/:id", (req, res) => {
-	User.findById(req.params.id, async (err, user) => {
-		if (!err) {
-			let campgrounds = await Campground.find().where('author.id').equals(user.id);
-			res.render("users/show", { user: user, campgrounds: campgrounds })
-		} else {
-			console.log(err);
-			req.flash("error", "Oops, Something went wrong.");
-			res.redirect("/campgrounds");
-		}
-	})
-})
 module.exports = router;
