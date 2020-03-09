@@ -27,26 +27,33 @@
 			<div id="navbar" class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
 					<li <%if(typeof active !== 'undefined' && active=="campgrounds"){%>class="active" <%}%>><a href="/campgrounds">Home</a></li>
-					  </ul>
-					<ul class="nav navbar-nav navbar-right">
-						<% if(!currentUser){ %>
-							<li <%if(typeof active !== 'undefined' && active=="login"){%>class="active" <%}%>><a href="/login">Login</a></li>
-							<li <%if(typeof active !== 'undefined' && active=="signup"){%>class="active" <%}%>><a href="/signup">Sign Up</a></li>
-						<% } else { %> 
-							<li class="dropdown">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-								aria-expanded="false">Notifications <span class="badge"><%=notifications.length%></span></a>
-								<ul class="dropdown-menu">
-									<li><a href="/notifications">View all past notifications</a></li>
-									<%notifications.forEach(notification => { %>
-										<li><a href="/notifications/<%=notification.id%>">
-											<%=notification.username +notification.text %></a></li>
-									<%})%>
-								</ul>
-							</li>
-							<li><a href="/users/<%=currentUser.id%>">Hi, <%=currentUser.username%></a></li>
-							<li><a href="/logout">Logout</a></li>
-						<% } %>
+				</ul>
+					<form class="navbar-form navbar-left" action="/campgrounds" method="GET">
+						<div class="form-group">
+							<label class="sr-only">Search for campgrounds</label>
+							<input class="form-control" name="search" type="text" placeholder="Search Campgrounds">
+						</div>
+							<button class="btn btn-default" type="submit">Search</button>
+					</form>
+				<ul class="nav navbar-nav navbar-right">
+					<% if(!currentUser){ %>
+						<li <%if(typeof active !== 'undefined' && active=="login"){%>class="active" <%}%>><a href="/login">Login</a></li>
+						<li <%if(typeof active !== 'undefined' && active=="signup"){%>class="active" <%}%>><a href="/signup">Sign Up</a></li>
+					<% } else { %> 
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+							aria-expanded="false">Notifications <span class="badge"><%=notifications.length%></span></a>
+							<ul class="dropdown-menu">
+								<li><a href="/notifications">View all past notifications</a></li>
+								<%notifications.forEach(notification => { %>
+									<li><a href="/notifications/<%=notification.id%>">
+										<%=notification.username +notification.text %></a></li>
+								<%})%>
+							</ul>
+						</li>
+						<li><a href="/users/<%=currentUser.id%>">Hi, <%=currentUser.username%></a></li>
+						<li><a href="/logout">Logout</a></li>
+					<% } %>
 				</ul>
 			</div>
 		</div>

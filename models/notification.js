@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-// Define comment schema
+// Define notification schema
 const notificationSchema = new mongoose.Schema({
     username: String,
     campgroundSlug: String,

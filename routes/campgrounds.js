@@ -34,11 +34,21 @@ const upload = multer({ storage: storage, fileFilter: imageFilter });
 // Index route
 router.get("/", async (req, res) => {
 	try {
+		let campgrounds;
 		// for Pagination
 		const campsPerPage = 8;
-		var pageQuery = parseInt(req.query.page);
-		var pageNumber = pageQuery ? pageQuery : 1;
-		const campgrounds = await Campground.find({}).sort({ createdAt: -1 }).skip(campsPerPage * pageNumber - campsPerPage).limit(campsPerPage);
+		const pageQuery = parseInt(req.query.page);
+		const pageNumber = pageQuery ? pageQuery : 1;
+		if(req.query.search){
+			const search =new RegExp(escapeRegExp(req.query.search),'gi')
+			campgrounds = await Campground.find({name: search}).sort({ createdAt: -1 }).skip(campsPerPage * pageNumber - campsPerPage).limit(campsPerPage);
+			if(campgrounds.length < 1) {
+				req.flash("error", "No campgrounds match that search, Please try again.");
+				return res.redirect("back")
+			}
+		} else {
+			campgrounds = await Campground.find({}).sort({ createdAt: -1 }).skip(campsPerPage * pageNumber - campsPerPage).limit(campsPerPage);
+		}
 		const numberOfCampgrounds = await Campground.countDocuments();
 		req.session.returnTo = req.originalUrl;
 		res.render("campgrounds/index", {
@@ -197,4 +207,8 @@ router.post("/:slug/like", middleware.isLoggedIn, async (req, res) => {
 		res.redirect("/campgrounds");
 	}
 })
+
+function escapeRegExp(string) {
+	return string.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"); // $& means the whole matched string
+  }
 module.exports = router;
